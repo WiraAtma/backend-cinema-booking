@@ -69,3 +69,16 @@ Create Seeder :
 ```bash
 npx prisma db seed
 ```
+
+URL API:
+- Films :
+    - Get All Film :
+        ```bash
+        http://<your_local_host>/api/films
+        ```
+- Seats :
+    - Get Seat Status :
+       ```bash
+        http://<your_local_host>/api/seats/<scheduleId>
+        ``` 
+        Note : ScheduleId Example : 1, 2, etc.

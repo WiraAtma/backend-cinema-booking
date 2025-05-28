@@ -43,6 +43,7 @@ model ScheduleSeat {
   seatId     Int
 
   isLocked   Boolean   @default(false)
+  lockType   LockType?
   lockTime   DateTime? // Nullable
   isBooked   Boolean   @default(false)
 
@@ -63,4 +64,9 @@ model Booking {
 enum BookingStatus {
   PENDING
   CONFIRMED
+}
+
+enum LockType {
+  TEMPORARY
+  PERMANENT
 }
