@@ -72,13 +72,28 @@ npx prisma db seed
 
 URL API:
 - Films :
-    - Get All Film :
+    - GET All Film :
         ```bash
         http://<your_local_host>/api/films
         ```
 - Seats :
-    - Get Seat Status :
+    - GET Seat Status :
        ```bash
         http://<your_local_host>/api/seats/<scheduleId>
         ``` 
         Note : ScheduleId Example : 1, 2, etc.
+- Bookings :
+    - POST Booking Status
+    ```bash
+        http://<your_local_host>/api/bookings
+    ``` 
+    ```json
+        {
+            "filmId" : your_film_id,
+            "seatId" : your_seat_id,
+            "scheduleId": your_schedule_id,
+            "userName": "Your Username Input"
+        }
+    ```
+    Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeatId.
+    
