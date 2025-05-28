@@ -7,6 +7,9 @@
 # Log files
 *.log
 
+/prisma/generated/
+/prisma/migrations/
+
 # OS specific files
 .DS_Store         # macOS
 Thumbs.db         # Windows
