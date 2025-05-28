@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Film {
+  id       Int       @id @default(autoincrement())
+  title    String
+  schedules Schedule[]
+}
+
+model Schedule {
+  id       Int       @id @default(autoincrement())
+  film     Film      @relation(fields: [filmId], references: [id])
+  filmId   Int
+  showTime DateTime
+  endTime  DateTime
+  scheduleSeats ScheduleSeat[]
+}
+
+model Seat {
+  id     Int       @id @default(autoincrement())
+  code   String
+  scheduleSeats ScheduleSeat[]
+}
+
+model ScheduleSeat {
+  id         Int       @id @default(autoincrement())
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  seat       Seat      @relation(fields: [seatId], references: [id])
+  seatId     Int
+
+  isLocked   Boolean   @default(false)
+  lockTime   DateTime? // Nullable
+  isBooked   Boolean   @default(false)
+
+  bookings   Booking[]
+  
+  @@unique([scheduleId, seatId]) // Mencegah duplikasi kursi pada jadwal yang sama
+}
+
+model Booking {
+  id              Int           @id @default(autoincrement())
+  scheduleSeat    ScheduleSeat  @relation(fields: [scheduleSeatId], references: [id])
+  scheduleSeatId  Int
+  status          BookingStatus
+  userName        String
+  createdAt       DateTime      @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+}
