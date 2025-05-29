@@ -96,7 +96,7 @@ API :
         Note : ScheduleId Example : 1, 2, etc.
         
 - Bookings :
-    - POST Booking Status
+    - POST Booking Status :
         Memesan kursi user dan akan mengunci kursi secara sementara / menunggu konfirmasi dari sistem
 
         ```bash
@@ -110,9 +110,9 @@ API :
                 "userName": "your_input_request"
             }
         ```
-        Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeat.scheduleId.
+        Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database film.id, seat.id, and schedule.id.
 
-    - POST Booking Confirmed
+    - POST Booking Confirmed :
         Memberikan Konfirmasi ke sistem kalau kursi tersebut
         
         ```bash
@@ -123,7 +123,7 @@ API :
                 "scheduleId": your_schedule_id
             }
         ```
-        Note: Replace your_schedule_id with your actual database scheduleSeat.scheduleId and Before You Send This Request You Must Send Request For Booking Status First.
+        Note: Replace your_schedule_id with your actual database scheduleSeat.id and Before You Send This Request You Must Send Request For Booking Status First.
 
 
     
