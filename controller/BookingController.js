@@ -1,106 +1,136 @@
 const prisma = require('../config/db')
 
 exports.postBooking = async (req, res) => {
-    const { filmId, seatId, scheduleId, userName } = req.body;
+  const { filmId, seatId, scheduleId, userName } = req.body;
 
-    try {
-        // Cek apakah schedule ada 
-        const schedule = await prisma.schedule.findFirst({
-        where: {
-            id: parseInt(scheduleId),
-            filmId: parseInt(filmId)
-        }
-        });
+  try {
+    // Validasi jadwal
+    const schedule = await prisma.schedule.findFirst({
+      where: {
+        id: parseInt(scheduleId),
+        filmId: parseInt(filmId)
+      }
+    });
 
-        if (!schedule) {
-        return res.status(404).json({
-            status: 'error',
-            message: 'Jadwal tidak ditemukan'
-        });
-        }
-
-        // Mulai transaksi (Mengatasi Race Condition)
-        await prisma.$transaction(async (prismaTx) => {
-
-            // Lock baris kursi dengan FOR UPDATE
-            // Dari Kode ini user yang lain tidak bisa mengakses kursi ini sampai transaksi selesai kursi duluan selesai
-            const seats = await prismaTx.$queryRaw`
-                SELECT * FROM "ScheduleSeat"
-                WHERE "scheduleId" = ${parseInt(scheduleId)} AND "seatId" = ${parseInt(seatId)}
-                FOR UPDATE
-            `;
-
-            if (!seats || seats.length === 0) {
-                throw new Error('Kursi tidak ditemukan');
-            }
-
-            const seat = seats[0];
-
-            if (seat.isBooked) {
-                throw new Error('Kursi sudah dipesan');
-            }
-
-            if (seat.isLocked && seat.lockTime) {
-                const now = new Date();
-                const expiredAt = new Date(seat.lockTime);
-                expiredAt.setMinutes(expiredAt.getMinutes() + 5);
-
-                if (now < expiredAt) {
-                throw new Error('Kursi sedang dikunci oleh pengguna lain');
-                }
-
-                // Lock sudah expired, lepas lock dan hapus booking PENDING
-                await prismaTx.scheduleSeat.update({
-                where: { id: seat.id },
-                data: {
-                    isLocked: false,
-                    lockTime: null,
-                    lockType: null
-                }
-                });
-
-                await prismaTx.booking.deleteMany({
-                where: {
-                    scheduleSeatId: seat.id,
-                    status: 'PENDING'
-                }
-                });
-            }
-
-            // Lock kursi baru
-            const lockedSeat = await prismaTx.scheduleSeat.update({
-                where: { id: seat.id },
-                data: {
-                isLocked: true,
-                lockTime: new Date(),
-                lockType: 'TEMPORARY'
-                }
-            });
-
-            // Buat booking baru dengan status PENDING
-            await prismaTx.booking.create({
-                data: {
-                scheduleSeatId: lockedSeat.id,
-                userName,
-                status: 'PENDING'
-                }
-            });
-        });
-
-        // Jika semua berhasil
-        res.status(201).json({
-        status: 'success',
-        message: 'Kursi berhasil dikunci. Lanjutkan pembayaran dalam 5 menit.'
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(400).json({
+    if (!schedule) {
+      return res.status(404).json({
         status: 'error',
-        message: error.message || 'Internal Server Error'
-        });
+        message: 'Jadwal tidak ditemukan'
+      });
     }
+
+    // Validasi seatId ada di tabel Seat
+    const seatCheck = await prisma.seat.findUnique({
+      where: { id: parseInt(seatId) }
+    });
+
+    if (!seatCheck) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Kursi tidak ditemukan'
+      });
+    }
+
+    // Transaksi aman dari race condition
+    await prisma.$transaction(async (prismaTx) => {
+      // Cek apakah kursi sudah terdaftar di tabel ScheduleSeat
+      let seatEntry = await prismaTx.scheduleSeat.findFirst({
+        where: {
+          seatId: parseInt(seatId),
+          scheduleId: parseInt(scheduleId)
+        }
+      });
+
+      // Jika belum, buat baru
+      if (!seatEntry) {
+        seatEntry = await prismaTx.scheduleSeat.create({
+          data: {
+            seatId: parseInt(seatId),
+            scheduleId: parseInt(scheduleId),
+            isBooked: false,
+            isLocked: false
+          }
+        });
+      }
+
+      // Lock baris ScheduleSeat
+      const seats = await prismaTx.$queryRaw`
+        SELECT * FROM \`ScheduleSeat\`
+        WHERE \`id\` = ${seatEntry.id}
+        FOR UPDATE
+      `;
+
+      if (!seats || seats.length === 0) {
+        throw new Error('Kursi tidak ditemukan');
+      }
+
+      const seat = seats[0];
+
+      if (seat.isBooked) {
+        throw new Error('Kursi telah dipesan');
+      }
+
+      if (seat.isLocked && seat.lockTime) {
+        const now = new Date();
+        const expiredAt = new Date(seat.lockTime);
+        expiredAt.setMinutes(expiredAt.getMinutes() + 5);
+
+        if (now < expiredAt) {
+          throw new Error('Kursi sedang dikunci oleh pengguna lain');
+        }
+
+        // Lock sudah expired, reset kursi dan hapus booking pending
+        await prismaTx.scheduleSeat.update({
+          where: { id: seat.id },
+          data: {
+            isLocked: false,
+            lockTime: null,
+            lockType: null
+          }
+        });
+
+        await prismaTx.booking.deleteMany({
+          where: {
+            scheduleSeatId: seat.id,
+            status: 'PENDING'
+          }
+        });
+      }
+
+      // Lock kursi untuk user ini
+      const lockedSeat = await prismaTx.scheduleSeat.update({
+        where: { id: seat.id },
+        data: {
+          isLocked: true,
+          lockTime: new Date(),
+          lockType: 'TEMPORARY'
+        }
+      });
+
+      // Buat booking baru
+      await prismaTx.booking.create({
+        data: {
+          scheduleSeatId: lockedSeat.id,
+          userName,
+          status: 'PENDING'
+        }
+      });
+    });
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Kursi berhasil dikunci. Lanjutkan pembayaran dalam 5 menit.'
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      status: 'error',
+      message: error.message || 'Terjadi kesalahan server.'
+    });
+  }
 };
+
 
 
 exports.confirmBooking = async (req, res) => {
