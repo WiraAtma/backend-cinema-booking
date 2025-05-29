@@ -34,12 +34,12 @@ async function main() {
   // ScheduleSeats (kombinasi nilai isLocked dan isBooked)
   const scheduleSeatsData = [
     // schedule 1
-    { scheduleId: schedule1.id, seatId: seats[0].id, isLocked: true, LockType: 'TEMPORARY', lockTime: new Date('2025-05-28T13:50:00'), isBooked: false },
+    { scheduleId: schedule1.id, seatId: seats[0].id, isLocked: true, lockType: 'TEMPORARY', lockTime: new Date('2025-05-28T13:50:00'), isBooked: false },
     { scheduleId: schedule1.id, seatId: seats[1].id, isLocked: false, lockTime: null, isBooked: true },
-    { scheduleId: schedule1.id, seatId: seats[2].id, isLocked: true, LockType: 'PERMANENT', lockTime: new Date('2025-05-28T13:55:00'), isBooked: true },
+    { scheduleId: schedule1.id, seatId: seats[2].id, isLocked: true, lockType: 'PERMANENT', lockTime: new Date('2025-05-28T13:55:00'), isBooked: true },
     // schedule 2
     { scheduleId: schedule2.id, seatId: seats[3].id, isLocked: false, lockTime: null, isBooked: true },
-    { scheduleId: schedule2.id, seatId: seats[4].id, isLocked: true, LockType: 'TEMPORARY', lockTime: new Date('2025-05-28T17:50:00'), isBooked: false },
+    { scheduleId: schedule2.id, seatId: seats[4].id, isLocked: true, lockType: 'TEMPORARY', lockTime: new Date('2025-05-28T17:50:00'), isBooked: false },
   ];
 
   for (const data of scheduleSeatsData) {
