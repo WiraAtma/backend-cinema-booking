@@ -15,7 +15,7 @@ Sistem Pemesanan Kursi Bioskop
 Clone Repository:
 
 ```bash
-https://github.com/WiraAtma/backend-cinema-booking
+git clone https://github.com/WiraAtma/backend-cinema-booking
 ```
 
 Navigate to Project Directory:
@@ -62,7 +62,7 @@ npx prisma generate
 Create Migration:
 
 ```bash
-prisma migrate dev
+npx prisma migrate dev
 ```
 
 Create Seeder :
@@ -70,7 +70,7 @@ Create Seeder :
 npx prisma db seed
 ```
 
-URL API:
+API :
 - Films :
     - GET All Film :
         Mengambil semua daftar film beserta jam tayang dan jam selesai tayang
@@ -88,31 +88,33 @@ URL API:
         
 - Bookings :
     - POST Booking Status
-    Memesan kursi user dan akan mengunci kursi secara sementara / menunggu konfirmasi dari sistem
-    ```bash
-        http://<your_local_host>/api/bookings
-    ``` 
-    ```json
-        {
-            "filmId" : your_film_id,
-            "seatId" : your_seat_id,
-            "scheduleId": your_schedule_id,
-            "userName": "your_input_request"
-        }
-    ```
-    Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeat.scheduleId.
+        Memesan kursi user dan akan mengunci kursi secara sementara / menunggu konfirmasi dari sistem
+
+        ```bash
+            http://<your_local_host>/api/bookings
+        ``` 
+        ```json
+            {
+                "filmId" : your_film_id,
+                "seatId" : your_seat_id,
+                "scheduleId": your_schedule_id,
+                "userName": "your_input_request"
+            }
+        ```
+        Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeat.scheduleId.
 
     - POST Booking Confirmed
-    Memberikan Konfirmasi ke sistem kalau kursi tersebut
-    ```bash
-        http://<your_local_host>/api/booking/confirm
-    ```
+        Memberikan Konfirmasi ke sistem kalau kursi tersebut
+        
+        ```bash
+            http://<your_local_host>/api/booking/confirm
+        ```
         ```json
-        {
-            "scheduleId": your_schedule_id
-        }
-    ```
-    Note: Replace your_schedule_id with your actual database scheduleSeat.scheduleId and Before You Send This Request You Must Send Request For Booking Status First.
+            {
+                "scheduleId": your_schedule_id
+            }
+        ```
+        Note: Replace your_schedule_id with your actual database scheduleSeat.scheduleId and Before You Send This Request You Must Send Request For Booking Status First.
 
 
     
