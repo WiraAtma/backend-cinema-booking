@@ -113,7 +113,7 @@ API :
         Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database film.id, seat.id, and schedule.id.
 
     - POST Booking Confirmed :
-        Memberikan Konfirmasi ke sistem kalau kursi tersebut
+        Memberikan Konfirmasi ke sistem kalau kursi tersebut sudah terkonfirmasi
         
         ```bash
             http://<your_local_host>/api/booking/confirm
