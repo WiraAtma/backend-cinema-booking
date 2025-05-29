@@ -73,17 +73,22 @@ npx prisma db seed
 URL API:
 - Films :
     - GET All Film :
+        Mengambil semua daftar film beserta jam tayang dan jam selesai tayang
         ```bash
         http://<your_local_host>/api/films
         ```
+
 - Seats :
     - GET Seat Status :
+        Mengambil daftar status kursi pada setiap film sesuai dengan scheduleId
        ```bash
         http://<your_local_host>/api/seats/<scheduleId>
         ``` 
         Note : ScheduleId Example : 1, 2, etc.
+        
 - Bookings :
     - POST Booking Status
+    Memesan kursi user dan akan mengunci kursi secara sementara / menunggu konfirmasi dari sistem
     ```bash
         http://<your_local_host>/api/bookings
     ``` 
@@ -92,8 +97,22 @@ URL API:
             "filmId" : your_film_id,
             "seatId" : your_seat_id,
             "scheduleId": your_schedule_id,
-            "userName": "Your Username Input"
+            "userName": "your_input_request"
         }
     ```
-    Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeatId.
+    Note: Replace your_film_id, your_seat_id, and your_schedule_id with your actual database schedule.filmId, scheduleSeat.seatId, and scheduleSeat.scheduleId.
+
+    - POST Booking Confirmed
+    Memberikan Konfirmasi ke sistem kalau kursi tersebut
+    ```bash
+        http://<your_local_host>/api/booking/confirm
+    ```
+        ```json
+        {
+            "scheduleId": your_schedule_id
+        }
+    ```
+    Note: Replace your_schedule_id with your actual database scheduleSeat.scheduleId and Before You Send This Request You Must Send Request For Booking Status First.
+
+
     
