@@ -74,7 +74,7 @@ Run Local Host :
 - ```bash
     npm run start
     ```
-- (disarankan) gunakan nodemon untuk development agar server restart otomatis:
+- (opsional) gunakan jika sudah menginstall nodemon untuk development agar server restart otomatis:
     ```bash
     npm run dev
     ```
