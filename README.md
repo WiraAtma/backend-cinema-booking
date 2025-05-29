@@ -70,6 +70,15 @@ Create Seeder :
 npx prisma db seed
 ```
 
+Run Local Host :
+- ```bash
+    npm run start
+    ```
+- (disarankan) gunakan nodemon untuk development agar server restart otomatis:
+    ```bash
+    npm run dev
+    ```
+
 API :
 - Films :
     - GET All Film :
