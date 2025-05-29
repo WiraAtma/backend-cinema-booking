@@ -119,7 +119,7 @@ exports.postBooking = async (req, res) => {
 
     res.status(201).json({
       status: 'success',
-      message: 'Kursi berhasil dikunci. Lanjutkan pembayaran dalam 5 menit.'
+      message: 'Kursi berhasil dikunci sementara. Lanjutkan Konfirmasi dalam 5 menit.'
     });
 
   } catch (error) {
